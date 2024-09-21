@@ -1,8 +1,10 @@
 """ FastAPI """
 
 from contextlib import asynccontextmanager
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends
 from starlette.responses import RedirectResponse
+from helpers.api_key_auth import get_api_key
+from routes.author_route import author_router
 from config.database import database as connection  # type: ignore
 
 
@@ -30,11 +32,10 @@ app = FastAPI(
     title="Implementación de Pylint y PEP8",
     version="2.0",
     contact={
-        "name": "Mariana",
+        "name": "Mariana and Alejandro",
         "url": "https://github.com/Mariana1010P/ImplementacionPylintBlack",
-        "email": "mariana1010.pe@gmail.com",
     },
-    lifespan=manage_lifespan,  # Mueve la función aquí
+    lifespan=manage_lifespan,
 )
 
 
@@ -44,3 +45,8 @@ def read_root():
     Redirects to the Swagger UI documentation.
     """
     return RedirectResponse(url="/docs")
+
+
+app.include_router(
+    author_router, prefix="/authors", dependencies=[Depends(get_api_key)]
+)

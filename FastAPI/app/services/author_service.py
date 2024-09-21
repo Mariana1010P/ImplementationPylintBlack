@@ -19,7 +19,7 @@ class AuthorService:
         delete_author(author_id: int)
         get_author_by_id(author_id: int)
         get_all_authors()
-    
+
     Raises:
         ValueError: If any data validation fails.
         IntegrityError: If there's an integrity error during creation.

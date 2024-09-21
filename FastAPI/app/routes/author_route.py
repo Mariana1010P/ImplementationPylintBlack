@@ -8,11 +8,11 @@ from fastapi import APIRouter, Body, HTTPException
 from schemas.author import Author
 from services.author_service import AuthorService  # type: ignore
 
-router = APIRouter()
+author_router = APIRouter()
 # pylint: disable=no-value-for-parameter
 
 
-@router.get("/authors")
+@author_router.get("/authors")
 def get_all_authors():
     """
     Retrieves all authors from the database.
@@ -31,7 +31,7 @@ def get_all_authors():
         raise HTTPException(status_code=500, detail=str(exc)) from exc
 
 
-@router.get("/authors/{author_id}")
+@author_router.get("/authors/{author_id}")
 def get_author_by_id(author_id: int):
     """
     Retrieves an author by ID.
@@ -57,7 +57,7 @@ def get_author_by_id(author_id: int):
         ) from exc
 
 
-@router.post("/authors")
+@author_router.post("/authors")
 def create_author(author: Author = Body(...)):
     """
     Creates a new author.
@@ -86,7 +86,7 @@ def create_author(author: Author = Body(...)):
         ) from exc
 
 
-@router.put("/authors/{author_id}")
+@author_router.put("/authors/{author_id}")
 def update_author(author_id: int, author: Author = Body(...)):
     """
     Updates an author.
@@ -118,7 +118,7 @@ def update_author(author_id: int, author: Author = Body(...)):
         ) from exc
 
 
-@router.delete("/authors/{author_id}")
+@author_router.delete("/authors/{author_id}")
 def delete_author(author_id: int):
     """
     Delete an author by ID.
