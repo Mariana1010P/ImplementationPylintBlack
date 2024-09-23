@@ -74,3 +74,4 @@ class ArticleModel(Model):
         database = database
         table_name = "Article"
 
+
