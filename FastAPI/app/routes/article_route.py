@@ -26,9 +26,7 @@ def get_article_by_id(article_id: int):
     Retrieve a specific article by ID.
     """
     try:
-        article = ArticleService.get_article_by_id(
-            article_id
-        ) 
+        article = ArticleService.get_article_by_id(article_id)
         if not article:
             raise HTTPException(status_code=404, detail="Article not found")
         return article
