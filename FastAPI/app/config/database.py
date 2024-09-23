@@ -63,14 +63,14 @@ class ArticleModel(Model):
         id (int): Unique identifier for the article.
         title (str): Title of the article.
         content (str): Content of the article.
-        author (int): Author of the article.
+        author_id_article (int): Author of the article.
         published_date (datetime): Date when the article was published.
     """
 
     article_id = AutoField(primary_key=True)
     title = CharField(max_length=255)
     content = TextField()
-    author_id = ForeignKeyField(AuthorModel, backref="articles", on_delete="CASCADE")
+    author_id_article = ForeignKeyField(AuthorModel, backref="article", on_delete="CASCADE")
     published_date = DateTimeField(null=True)
 
     class Meta:
@@ -84,3 +84,4 @@ class ArticleModel(Model):
 
         database = database
         table_name = "article"
+

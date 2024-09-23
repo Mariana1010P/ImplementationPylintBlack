@@ -1,17 +1,19 @@
-""" article_route.py"""
+""" article_route.py """
 
 from fastapi import APIRouter, Body, HTTPException
-from peewee import IntegrityError
+from peewee import DoesNotExist, IntegrityError
 from schemas.article import Article
 from services.article_service import ArticleService
 
-article_router = APIRouter()
+article_route = APIRouter()
 
-
-@article_router.get("/articles")
-def get_articles():
+@article_route.get("/articles")
+def get_all_articles():
     """
-    Retrieve all articles.
+    Retrieves all articles from the database.
+
+    Returns:
+        list: A list of all articles.
     """
     try:
         articles = ArticleService.get_all_articles()
@@ -19,70 +21,94 @@ def get_articles():
     except Exception as exc:
         raise HTTPException(status_code=500, detail=str(exc)) from exc
 
-
-@article_router.get("/article/{article_id}")
+@article_route.get("/articles/{article_id}")
 def get_article_by_id(article_id: int):
     """
-    Retrieve a specific article by ID.
+    Retrieves an article by ID.
+
+    Args:
+        article_id (int): The ID of the article to retrieve.
+
+    Returns:
+        ArticleModel: The article with the given ID.
     """
     try:
         article = ArticleService.get_article_by_id(article_id)
         if not article:
             raise HTTPException(status_code=404, detail="Article not found")
         return article
+    except DoesNotExist:
+        raise HTTPException(status_code=404, detail="Article not found")
     except Exception as exc:
         raise HTTPException(status_code=500, detail=str(exc)) from exc
 
-
-@article_router.post("/article")
+@article_route.post("/articles")
 def create_article(article: Article = Body(...)):
     """
-    Create a new article.
+    Creates a new article.
+
+    Args:
+        title (str): The title of the article.
+        content (str): The content of the article.
+        author_id_article (int): The author ID associated with the article.
+        published_date (datetime): The date the article was published.
+
+    Returns:
+        ArticleModel: The created article.
     """
     try:
-        article_data = ArticleService.create_article(
+        article_instance = ArticleService.create_article(
             title=article.title,
-            author_id=article.author_id,
+            author_id_article=article.author_id_article,
             content=article.content,
-            published_date=article.published_date,
+            published_date=article.published_date
         )
-        return article_data
-    except IntegrityError as e:
-        raise HTTPException(status_code=400, detail=str(e)) from e
+        return {"message": "Article created", "article": article_instance}
+    except IntegrityError as exc:
+        raise HTTPException(status_code=400, detail=f"Integrity error: {str(exc)}") from exc
     except Exception as exc:
         raise HTTPException(status_code=500, detail=str(exc)) from exc
 
-
-@article_router.put("/article/{article_id}")
+@article_route.put("/articles/{article_id}", response_model=Article)
 def update_article(article_id: int, article_data: Article = Body(...)):
     """
-    Update a specific article by ID.
+    Updates an article.
+
+    Args:
+        article_id (int): The ID of the article to update.
+        article_data (Article): The new data for the article.
+
+    Returns:
+        ArticleModel: The updated article.
     """
     try:
-        updated_article = ArticleService.update_article(
-            article_id=article_id,
-            title=article_data.title,
-            content=article_data.content,
-            author_id=article_data.author_id,
-            published_date=article_data.published_date,
-        )
+        article_update_data = article_data.dict(exclude_unset=True)
+        article_update_data.pop('article_id', None)  # Elimina article_id del diccionario
+
+        updated_article = ArticleService.update_article(article_id, **article_update_data)
         return {"message": "Article updated", "article": updated_article}
     except ValueError as exc:
         raise HTTPException(status_code=404, detail=str(exc)) from exc
     except IntegrityError as e:
-        raise HTTPException(status_code=400, detail=str(e)) from e
+        raise HTTPException(status_code=400, detail="Integrity error: " + str(e))
     except Exception as exc:
         raise HTTPException(status_code=500, detail=str(exc)) from exc
 
-
-@article_router.delete("/article/{article_id}")
+@article_route.delete("/articles/{article_id}")
 def delete_article(article_id: int):
     """
-    Delete a specific article by ID.
+    Deletes an article by ID.
+
+    Args:
+        article_id (int): The ID of the article to delete.
+
+    Returns:
+        dict: A dictionary containing a success message.
     """
     try:
-        if not ArticleService.delete_article(article_id):
+        success = ArticleService.delete_article(article_id)
+        if not success:
             raise HTTPException(status_code=404, detail="Article not found")
-        return {"detail": "Article deleted successfully"}
+        return {"message": "Article deleted"}
     except Exception as exc:
         raise HTTPException(status_code=500, detail=str(exc)) from exc
