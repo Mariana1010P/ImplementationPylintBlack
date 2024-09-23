@@ -4,7 +4,7 @@ This module configures and manages the database connection using Peewee ORM.
 
 import os
 from dotenv import load_dotenv
-from peewee import Model, MySQLDatabase, AutoField, CharField  # type: ignore
+from peewee import Model, MySQLDatabase, AutoField, CharField, TextField, ForeignKeyField, DateTimeField  # type: ignore
 
 # Load environment variables from a .env file
 load_dotenv()
@@ -17,7 +17,6 @@ database = MySQLDatabase(
     host=os.getenv("MYSQL_HOST"),
     port=int(os.getenv("MYSQL_PORT")),
 )
-
 
 # pylint: disable=too-few-public-methods
 class AuthorModel(Model):
@@ -42,7 +41,6 @@ class AuthorModel(Model):
             database (MySQLDatabase): The database connection used by the model.
             table_name (str): The name of the table in the database.
         """
-
         database = database
         table_name = "author"
 
@@ -62,7 +60,7 @@ class ArticleModel(Model):
     id = AutoField(primary_key=True)
     title = CharField(max_length=255)
     content = TextField()
-    author = models.ForeignKey(Author, on_delete=models.CASCADE)
+    author = ForeignKeyField(AuthorModel, backref='articles', on_delete='CASCADE')
     published_date = DateTimeField(null=True)
 
     class Meta:
@@ -75,3 +73,4 @@ class ArticleModel(Model):
         """
         database = database
         table_name = "Article"
+
