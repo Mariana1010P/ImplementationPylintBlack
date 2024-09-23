@@ -4,8 +4,9 @@ schemas/article.py
 This module defines the Pydantic model for an Article.
 """
 
-import datetime
+from datetime import datetime
 from pydantic import BaseModel
+
 
 class Article(BaseModel):
     """
@@ -18,12 +19,11 @@ class Article(BaseModel):
         author (str): Author of the article, foreing key extends to author.
         published_date (datetime): Date when the article was published.
         updated_date (datetime): Date when the article was last updated.
-       
+
     """
+
     article_id: int
     title: str
     content: str
     author: int
-    published_date: datetime.datetime
-    
-
+    published_date: datetime

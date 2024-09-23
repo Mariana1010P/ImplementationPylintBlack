@@ -2,16 +2,17 @@
 Module that provides service functionality for managing articles in the database.
 """
 
-import datetime  # Asegúrate de que esto esté primero
+from datetime import datetime  # Asegúrate de que esto esté primero
 from peewee import DoesNotExist, IntegrityError  # type: ignore
 from config.database import ArticleModel
+
 
 class ArticleService:
     """
     Service class for handling business logic related to articles.
 
     Methods:
-        create_article(title: str, author: int, category: str, content: str, published_date: datetime.datetime, status: str, updated_date: datetime.datetime) -> ArticleModel
+        create_article (title: str, author: int, content: str, published_date: datetime) -> ArticleModel
         update_article(article_id: int, **kwargs) -> ArticleModel
         delete_article(article_id: int) -> bool
         get_article_by_id(article_id: int) -> ArticleModel
@@ -20,8 +21,10 @@ class ArticleService:
 
     @staticmethod
     def create_article(
-        title: str, author: int, category: str, content: str,
-        published_date: datetime.datetime, status: str, updated_date: datetime.datetime
+        title: str,
+        author: int,
+        content: str,
+        published_date: datetime,
     ) -> ArticleModel:
         """
         Creates a new article in the database.
@@ -46,11 +49,8 @@ class ArticleService:
             return ArticleModel.create(
                 title=title,
                 author=author,
-                category=category,
                 content=content,
                 published_date=published_date,
-                status=status,
-                updated_date=updated_date
             )
         except IntegrityError as exc:
             raise ValueError(f"Failed to create article: {exc}") from exc
@@ -73,7 +73,7 @@ class ArticleService:
             IntegrityError: If there's an integrity error during update.
         """
         try:
-            article = ArticleModel.get(ArticleModel.id == article_id)
+            article = ArticleModel.get(ArticleModel.article_id == article_id)
             for key, value in kwargs.items():
                 setattr(article, key, value)
             article.save()
@@ -98,7 +98,7 @@ class ArticleService:
             DoesNotExist: If no article with the given ID exists.
         """
         try:
-            article = ArticleModel.get(ArticleModel.id == article_id)
+            article = ArticleModel.get(ArticleModel.article_id == article_id)
             article.delete_instance()
             return True
         except DoesNotExist:
@@ -121,7 +121,7 @@ class ArticleService:
             DoesNotExist: If no article with the given ID exists.
         """
         try:
-            return ArticleModel.get(ArticleModel.id == article_id)
+            return ArticleModel.get(ArticleModel.article_id == article_id)
         except DoesNotExist:
             return None
         except Exception as exc:

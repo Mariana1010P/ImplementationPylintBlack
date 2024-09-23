@@ -28,7 +28,7 @@ class AuthorService:
     """
 
     @staticmethod
-    def create_author(author_id: int, name: str, affiliation: str) -> AuthorModel:
+    def create_author(name: str, affiliation: str) -> AuthorModel:
         """
         Creates a new author in the database.
 
@@ -44,9 +44,7 @@ class AuthorService:
             IntegrityError: If there's an integrity error during creation.
         """
         try:
-            return AuthorModel.create(
-                author_id=author_id, name=name, affiliation=affiliation
-            )
+            return AuthorModel.create(name=name, affiliation=affiliation)
         except IntegrityError as exc:
             raise ValueError(f"Failed to create author: {exc}") from exc
 
