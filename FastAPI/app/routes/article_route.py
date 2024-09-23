@@ -3,7 +3,7 @@ import datetime
 from fastapi import APIRouter, Body, HTTPException
 from pydantic import BaseModel
 from peewee import DoesNotExist, IntegrityError
-from schemas.article import Article  # Asegúrate de tener esta clase definida
+from schemas.article import Article 
 from services.article_service import ArticleService
 
 article_route = APIRouter()
