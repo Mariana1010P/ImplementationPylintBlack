@@ -2,6 +2,7 @@
 Module that provides service functionality for managing articles in the database.
 """
 
+import datetime  # Asegúrate de que esto esté primero
 from peewee import DoesNotExist, IntegrityError  # type: ignore
 from config.database import ArticleModel
 
@@ -18,7 +19,10 @@ class ArticleService:
     """
 
     @staticmethod
-    def create_article(title: str, author: int, category: str, content: str, published_date: datetime.datetime, status: str, updated_date: datetime.datetime) -> ArticleModel:
+    def create_article(
+        title: str, author: int, category: str, content: str,
+        published_date: datetime.datetime, status: str, updated_date: datetime.datetime
+    ) -> ArticleModel:
         """
         Creates a new article in the database.
 
@@ -40,8 +44,13 @@ class ArticleService:
         """
         try:
             return ArticleModel.create(
-                title=title, author=author, category=category, content=content,
-                published_date=published_date, status=status, updated_date=updated_date
+                title=title,
+                author=author,
+                category=category,
+                content=content,
+                published_date=published_date,
+                status=status,
+                updated_date=updated_date
             )
         except IntegrityError as exc:
             raise ValueError(f"Failed to create article: {exc}") from exc
@@ -69,8 +78,8 @@ class ArticleService:
                 setattr(article, key, value)
             article.save()
             return article
-        except DoesNotExist:
-            raise ValueError(f"No article found with ID: {article_id}")
+        except DoesNotExist as exc:
+            raise ValueError(f"No article found with ID: {article_id}") from exc
         except Exception as exc:
             raise RuntimeError(f"Error updating article: {exc}") from exc
 

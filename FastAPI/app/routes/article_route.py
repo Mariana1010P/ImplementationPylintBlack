@@ -1,17 +1,10 @@
-"""
-article_route.py
-
-This module defines the API endpoints for handling articles.
-"""
-
 from typing import List, Optional
 import datetime
 from fastapi import APIRouter, Body, HTTPException
 from pydantic import BaseModel
 from peewee import DoesNotExist, IntegrityError
 from schemas.article import Article
-from database import ArticleModel
-
+from services.article_service import ArticleService
 article_route = APIRouter()
 
 class ArticleUpdate(BaseModel):
@@ -30,10 +23,10 @@ def get_articles():
     Retrieve all articles.
     """
     try:
-        articles = ArticleModel.get_all_articles()
+        articles = ArticleService.get_all_articles()  # Cambiado para usar el servicio
         return [Article.from_orm(article) for article in articles]
-    except DoesNotExist as exc:
-        raise HTTPException(status_code=404, detail="No articles found") from exc
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=str(exc)) from exc
 
 @article_route.get("/article/{article_id}", response_model=Article)
 def get_article(article_id: int):
@@ -41,10 +34,12 @@ def get_article(article_id: int):
     Retrieve a specific article by ID.
     """
     try:
-        article = ArticleModel.get_article_by_id(article_id)
+        article = ArticleService.get_article_by_id(article_id)  # Cambiado para usar el servicio
+        if not article:
+            raise HTTPException(status_code=404, detail="Article not found")
         return Article.from_orm(article)
-    except DoesNotExist as exc:
-        raise HTTPException(status_code=404, detail="Article not found") from exc
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=str(exc)) from exc
 
 @article_route.post("/article", response_model=Article)
 def create_article(article: Article = Body(...)):
@@ -52,7 +47,7 @@ def create_article(article: Article = Body(...)):
     Create a new article.
     """
     try:
-        article_data = ArticleModel.create_article(
+        article_data = ArticleService.create_article(
             title=article.title,
             author=article.author,
             category=article.category,
@@ -64,6 +59,8 @@ def create_article(article: Article = Body(...)):
         return Article.from_orm(article_data)
     except IntegrityError as e:
         raise HTTPException(status_code=400, detail=str(e)) from e
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=str(exc)) from exc
 
 @article_route.put("/article/{article_id}", response_model=Article)
 def update_article(article_id: int, article_data: ArticleUpdate):
@@ -72,13 +69,14 @@ def update_article(article_id: int, article_data: ArticleUpdate):
     """
     try:
         article_update_data = article_data.dict(exclude_unset=True)
-        updated_article = ArticleModel.update_article(article_id, **article_update_data)
-
+        updated_article = ArticleService.update_article(article_id, **article_update_data)
         return Article.from_orm(updated_article)
-    except DoesNotExist as exc:
-        raise HTTPException(status_code=404, detail="Article not found") from exc
+    except ValueError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
     except IntegrityError as e:
         raise HTTPException(status_code=400, detail=str(e)) from e
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=str(exc)) from exc
 
 @article_route.delete("/article/{article_id}")
 def delete_article(article_id: int):
@@ -86,9 +84,8 @@ def delete_article(article_id: int):
     Delete a specific article by ID.
     """
     try:
-        ArticleModel.delete_article(article_id)
+        if not ArticleService.delete_article(article_id):
+            raise HTTPException(status_code=404, detail="Article not found")
         return {"detail": "Article deleted successfully"}
-    except DoesNotExist as exc:
-        raise HTTPException(status_code=404, detail="Article not found") from exc
-    except IntegrityError as e:
-        raise HTTPException(status_code=400, detail=str(e)) from e
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=str(exc)) from exc
