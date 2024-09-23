@@ -4,7 +4,10 @@ This module configures and manages the database connection using Peewee ORM.
 
 import os
 from dotenv import load_dotenv
-from peewee import Model, MySQLDatabase, AutoField, CharField, TextField, ForeignKeyField, DateTimeField  # type: ignore
+from peewee import (
+    Model, MySQLDatabase, AutoField, CharField, TextField, 
+    ForeignKeyField, DateTimeField  # type: ignore
+)
 
 # Load environment variables from a .env file
 load_dotenv()
@@ -73,5 +76,4 @@ class ArticleModel(Model):
         """
         database = database
         table_name = "Article"
-
 
