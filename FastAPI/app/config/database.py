@@ -83,5 +83,5 @@ class ArticleModel(Model):
         """
 
         database = database
-        table_name = "Article"
+        table_name = "article"
 

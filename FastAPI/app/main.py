@@ -5,7 +5,7 @@ from fastapi import FastAPI, Depends
 from starlette.responses import RedirectResponse
 from helpers.api_key_auth import get_api_key
 from routes.author_route import author_router
-from routes.article_route import article_router
+from routes.article_route import article_route
 from config.database import database as connection  # type: ignore
 
 
@@ -56,7 +56,7 @@ app.include_router(
 )
 
 app.include_router(
-    article_router,
+    article_route,
     prefix="/articles",
     tags=["articles"],
     dependencies=[Depends(get_api_key)],
