@@ -1,9 +1,6 @@
 """ article_route.py"""
 
-from typing import List, Optional
-from datetime import datetime
 from fastapi import APIRouter, Body, HTTPException
-from pydantic import BaseModel
 from peewee import IntegrityError
 from schemas.article import Article
 from services.article_service import ArticleService
@@ -11,47 +8,35 @@ from services.article_service import ArticleService
 article_router = APIRouter()
 
 
-class ArticleUpdate(BaseModel):
-    """
-    Schema for updating an existing article.
-    """
-
-    title: Optional[str] = None
-    content: Optional[str] = None
-    author_id: Optional[int] = None
-    published_date: Optional[datetime] = None
-    updated_date: Optional[datetime] = None
-
-
-@article_router.get("/articles", response_model=List[Article])
+@article_router.get("/articles")
 def get_articles():
     """
     Retrieve all articles.
     """
     try:
-        articles = ArticleService.get_all_articles()  # Cambiado para usar el servicio
-        return [Article.from_orm(article) for article in articles]
+        articles = ArticleService.get_all_articles()
+        return {"articles": articles}
     except Exception as exc:
         raise HTTPException(status_code=500, detail=str(exc)) from exc
 
 
-@article_router.get("/article/{article_id}", response_model=Article)
-def get_article(article_id: int):
+@article_router.get("/article/{article_id}")
+def get_article_by_id(article_id: int):
     """
     Retrieve a specific article by ID.
     """
     try:
         article = ArticleService.get_article_by_id(
             article_id
-        )  # Cambiado para usar el servicio
+        ) 
         if not article:
             raise HTTPException(status_code=404, detail="Article not found")
-        return Article.from_orm(article)
+        return article
     except Exception as exc:
         raise HTTPException(status_code=500, detail=str(exc)) from exc
 
 
-@article_router.post("/article", response_model=Article)
+@article_router.post("/article")
 def create_article(article: Article = Body(...)):
     """
     Create a new article.
@@ -63,24 +48,27 @@ def create_article(article: Article = Body(...)):
             content=article.content,
             published_date=article.published_date,
         )
-        return Article.from_orm(article_data)
+        return article_data
     except IntegrityError as e:
         raise HTTPException(status_code=400, detail=str(e)) from e
     except Exception as exc:
         raise HTTPException(status_code=500, detail=str(exc)) from exc
 
 
-@article_router.put("/article/{article_id}", response_model=Article)
-def update_article(article_id: int, article_data: ArticleUpdate):
+@article_router.put("/article/{article_id}")
+def update_article(article_id: int, article_data: Article = Body(...)):
     """
     Update a specific article by ID.
     """
     try:
-        article_update_data = article_data.dict(exclude_unset=True)
         updated_article = ArticleService.update_article(
-            article_id, **article_update_data
+            article_id=article_id,
+            title=article_data.title,
+            content=article_data.content,
+            author_id=article_data.author_id,
+            published_date=article_data.published_date,
         )
-        return Article.from_orm(updated_article)
+        return {"message": "Article updated", "article": updated_article}
     except ValueError as exc:
         raise HTTPException(status_code=404, detail=str(exc)) from exc
     except IntegrityError as e:

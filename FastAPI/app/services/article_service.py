@@ -57,13 +57,22 @@ class ArticleService:
             raise ValueError(f"Failed to create article: {exc}") from exc
 
     @staticmethod
-    def update_article(article_id: int, **kwargs) -> ArticleModel:
+    def update_article(
+        article_id: int,
+        title: str,
+        content: str,
+        author_id: int,
+        published_date: datetime,
+    ) -> ArticleModel:
         """
         Updates an article in the database.
 
         Args:
             article_id (int): The ID of the article to update.
-            **kwargs: The fields to update.
+            title (str): The new title of the article.
+            content (str): The new content of the article.
+            author_id (int): The new author of the article.
+            published_date (datetime.datetime): The new date the article was published.
 
         Returns:
             ArticleModel: The updated article.
@@ -75,8 +84,10 @@ class ArticleService:
         """
         try:
             article = ArticleModel.get(ArticleModel.article_id == article_id)
-            for key, value in kwargs.items():
-                setattr(article, key, value)
+            article.title = title
+            article.content = content
+            article.author_id = author_id
+            article.published_date = published_date
             article.save()
             return article
         except DoesNotExist as exc:
