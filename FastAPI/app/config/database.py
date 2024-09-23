@@ -70,7 +70,7 @@ class ArticleModel(Model):
     article_id = AutoField(primary_key=True)
     title = CharField(max_length=255)
     content = TextField()
-    author = ForeignKeyField(AuthorModel, backref="articles", on_delete="CASCADE")
+    author_id = ForeignKeyField(AuthorModel, backref="articles", on_delete="CASCADE")
     published_date = DateTimeField(null=True)
 
     class Meta:

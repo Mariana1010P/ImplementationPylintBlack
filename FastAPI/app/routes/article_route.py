@@ -18,7 +18,7 @@ class ArticleUpdate(BaseModel):
 
     title: Optional[str] = None
     content: Optional[str] = None
-    author: Optional[int] = None
+    author_id: Optional[int] = None
     published_date: Optional[datetime] = None
     updated_date: Optional[datetime] = None
 
@@ -59,7 +59,7 @@ def create_article(article: Article = Body(...)):
     try:
         article_data = ArticleService.create_article(
             title=article.title,
-            author=article.author,
+            author_id=article.author_id,
             content=article.content,
             published_date=article.published_date,
         )

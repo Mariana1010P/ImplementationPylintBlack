@@ -12,7 +12,7 @@ class ArticleService:
     Service class for handling business logic related to articles.
 
     Methods:
-        create_article (title: str, author: int, content: str,
+        create_article (title: str, author_id: int, content: str,
         published_date: datetime) -> ArticleModel
         update_article(article_id: int, **kwargs) -> ArticleModel
         delete_article(article_id: int) -> bool
@@ -23,7 +23,7 @@ class ArticleService:
     @staticmethod
     def create_article(
         title: str,
-        author: int,
+        author_id: int,
         content: str,
         published_date: datetime,
     ) -> ArticleModel:
@@ -49,7 +49,7 @@ class ArticleService:
         try:
             return ArticleModel.create(
                 title=title,
-                author=author,
+                author_id=author_id,
                 content=content,
                 published_date=published_date,
             )

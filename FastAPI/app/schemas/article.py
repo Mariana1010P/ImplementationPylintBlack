@@ -25,5 +25,5 @@ class Article(BaseModel):
     article_id: int
     title: str
     content: str
-    author: int
+    author_id: int
     published_date: datetime
