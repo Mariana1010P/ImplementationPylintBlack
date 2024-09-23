@@ -1,129 +1,135 @@
 # ImplementationPylintBlack
 
-## Descripción del Proyecto
+## Project Description
 
-Este proyecto implementa una API para la gestión de artículos y autores, utilizando Docker para la configuración de la base de datos, Adminer para la gestión visual, y un backend con CRUD completo. Se siguen las convenciones de PEP8 mediante Pylint y Black para mantener la calidad y el estilo del código. Además, las APIs están protegidas con ApiKey para seguridad adicional.
+This project implements an API for managing articles and authors, using Docker for database configuration, Adminer for visual management, and a backend with complete CRUD functionality. PEP8 conventions are followed using Pylint and Black to maintain code quality and style. Additionally, the APIs are protected with an ApiKey for added security.
 
-## Clonar el Repositorio
+## Cloning the Repository
 
 ```bash
 git clone https://github.com/Mariana1010P/ImplementationPylintBlack.git
 cd ImplementationPylintBlack
 ```
 
-## Instalación y Configuración
+## Installation and Configuration
 
-### 1. Variables de Entorno
+### 1. Environment Variables
 
-El proyecto incluye un archivo `.env_example` que contiene las variables de entorno necesarias para la configuración del sistema. Debes crear un archivo `.env` en el directorio raíz del proyecto y configurar tus propias variables basadas en el ejemplo:
+The project includes a `.env_example` file containing the necessary environment variables for system configuration. You should create a `.env` file in the root directory of the project and configure your own variables based on the example:
 
 ```bash
 cp .env.example .env
 ```
 
-Edita el archivo `.env` con los valores correctos para tu entorno:
+Edit the `.env` file with the correct values for your environment:
 
 ```bash
-# Ejemplo de variables
-API_KEY = tu_api_key
-MYSQL_ROOT_PASSWORD= example
-MYSQL_DATABASE = db_example
-MYSQL_HOST = example
-MYSQL_PORT = 3306
-MYSQL_USER = example
-MYSQL_PASSWORD = example
+# Example variables
+API_KEY=your_api_key
+MYSQL_ROOT_PASSWORD=example
+MYSQL_DATABASE=db_example
+MYSQL_HOST=example
+MYSQL_PORT=3306
+MYSQL_USER=example
+MYSQL_PASSWORD=example
 ```
 
-### 2. Levantar los Contenedores con Makefile
+### 2. Building and Running FastAPI with Docker
 
-Este proyecto incluye un archivo `Makefile` para facilitar la configuración y ejecución de los servicios. Solo necesitas ejecutar el siguiente comando para levantar los contenedores de la base de datos, Adminer y el backend:
-
-```bash
-make deploy
-```
-
-Este comando utiliza Docker y el archivo `docker-compose.yml` que tiene la siguiente configuración:
-
-- **Base de datos MySQL**: Contenedor `database` con MySQL y volúmenes persistentes.
-- **Adminer**: Disponible en `http://localhost:8080` para gestionar la base de datos visualmente.
-- **FastAPI Backend**: El backend de la aplicación está configurado y se puede acceder en `http://localhost:8000`.
-
-### 3. Acceso a Adminer
-
-Accede a Adminer desde tu navegador en `http://localhost:8080` para gestionar la base de datos de forma visual. Los detalles de la conexión a la base de datos MySQL están definidos en el archivo `docker-compose.yml`:
-
-- **Servidor**: `db`
-- **Usuario**: `root`
-- **Contraseña**: `root`
-- **Base de datos**: La que definiste en tus variables de entorno.
-
-### 4. Construcción y Ejecución de FastAPI con Docker
-
-No necesitas instalar manualmente las dependencias de Python, ya que esto se realiza automáticamente cuando se construye el contenedor de FastAPI. El `Dockerfile` se encarga de:
-
-- Copiar los archivos de la aplicación.
-- Instalar las dependencias de Python listadas en `requirements.txt`.
-- Ejecutar la aplicación utilizando `uvicorn`.
-
-Para levantar los contenedores de la base de datos, Adminer y FastAPI, solo necesitas ejecutar:
+This project includes a `Makefile` to facilitate the configuration and execution of services. Just run the following command to start the containers for the database, Adminer, and the backend:
 
 ```bash
 make deploy
 ```
 
-### 5. Configuración de Pylint
-
-Pylint está configurado para analizar la calidad del código. Ejecuta el siguiente comando para verificar que el puntaje sea mayor a 7:
+**Note**: The `make deploy` command only works on Linux or Mac. On Windows, you need to use these commands:
 
 ```bash
-pylint nombre_del_paquete.py
+docker compose build
+docker compose up -d
 ```
 
-Puedes personalizar las reglas de Pylint en el archivo `.pylintrc`.
+This command uses Docker and the `docker-compose.yml` file which has the following configuration:
 
-### 6. Formateo del Código con Black
+- **MySQL Database**: `database` container with MySQL and persistent volumes.
+- **Adminer**: Available at `http://localhost:8080` for visual database management.
+- **FastAPI Backend**: The backend of the application is configured and can be accessed at `http://localhost:8000`.
 
-Para formatear el código siguiendo las convenciones de PEP8, utiliza Black:
+### 3. Accessing Adminer
+
+Access Adminer from your browser at `http://localhost:8080` to visually manage the database. The details for connecting to the MySQL database are defined in the `docker-compose.yml` file:
+
+- **Server**: `db`
+- **User**: `root`
+- **Password**: `root`
+- **Database**: The one you defined in your environment variables.
+
+### 4. Building and Running FastAPI with Docker
+
+You do not need to manually install Python dependencies, as this is done automatically when the FastAPI container is built. The `Dockerfile` takes care of:
+
+- Copying the application files.
+- Installing the Python dependencies listed in `requirements.txt`.
+- Running the application using `uvicorn`.
+
+To start the containers for the database, Adminer, and FastAPI, simply run:
 
 ```bash
-black nombre_del_paquete.py
-black . #Da formato a todo el proyecto
+make deploy
 ```
 
-### 7. Gestión de CRUD para Artículos y Autores
+### 5. Configuring Pylint
 
-El sistema permite gestionar las entidades `Artículo` y `Autor` mediante operaciones CRUD (Crear, Leer, Actualizar, Eliminar).
+Pylint is configured to analyze code quality. Run the following command to ensure the score is above 7:
 
-#### Entidades:
+```bash
+pylint name_of_package.py
+```
+
+You can customize Pylint rules in the `.pylintrc` file.
+
+### 6. Formatting Code with Black
+
+To format the code following PEP8 conventions, use Black:
+
+```bash
+black name_of_package.py
+black . # Formats the entire project
+```
+
+### 7. CRUD Management for Articles and Authors
+
+The system allows managing `Article` and `Author` entities through CRUD operations (Create, Read, Update, Delete).
+
+#### Entities:
 
 - **Article**:
-  - `article_id`: Identificador único.
-  - `title`: Título del artículo.
-  - `content`: Contenido del artículo.
-  - `published_date`: Fecha de publicación del artículo.
-  - `autor`: Clave foránea que referencia a un Autor.
+  - `article_id`: Unique identifier.
+  - `title`: Title of the article.
+  - `content`: Content of the article.
+  - `published_date`: Date the article was published.
+  - `author`: Foreign key referencing an Author.
 
 - **Author**:
-  - `author_id`: Identificador único.
-  - `name`: Nombre del autor.
-  - `affiliation`: Afiliación del autor.
+  - `author_id`: Unique identifier.
+  - `name`: Author's name.
+  - `affiliation`: Author's affiliation.
 
-Las rutas de la API están protegidas mediante ApiKey.
+The API routes are protected with an ApiKey.
 
-### 8. Protección de Swagger con ApiKey
+### 8. Protecting Swagger with ApiKey
 
-El acceso a la documentación interactiva de Swagger y las rutas de la API están protegidos mediante ApiKey. La clave se define en el archivo `.env` como `API_KEY`. 
+Access to the interactive Swagger documentation and the API routes is protected with an ApiKey. The key is defined in the `.env` file as `API_KEY`. 
 
-Para probar las rutas en Swagger, incluye la ApiKey en los encabezados de las solicitudes:
+To test the routes in Swagger, include the ApiKey in the headers of your requests:
 
 ```bash
-API_KEY=tu_api_key
+API_KEY=your_api_key
 ```
 
+### 9. Dockerfile for FastAPI
 
-### 9. Dockerfile para FastAPI
-
-El backend de FastAPI está configurado en Docker usando el siguiente `Dockerfile`:
+The FastAPI backend is configured in Docker using the following `Dockerfile`:
 
 ```dockerfile
 FROM python:3.12
@@ -141,90 +147,91 @@ RUN pip install -r requirements.txt
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "80"]
 ```
 
-Este Dockerfile:
+This Dockerfile:
 
-- Copia la aplicación FastAPI desde el directorio `app`.
-- Instala las dependencias de la aplicación listadas en `requirements.txt`.
-- Configura `uvicorn` como el servidor ASGI para servir el backend de FastAPI en el puerto 80.
+- Copies the FastAPI application from the `app` directory.
+- Installs the dependencies listed in `requirements.txt`.
+- Configures `uvicorn` as the ASGI server to serve the FastAPI backend on port 80.
 
-### 10. Dockerfile para MySQL
+### 10. Dockerfile for MySQL
 
-El proyecto incluye un `Dockerfile` específico para MySQL con la configuración:
+The project includes a specific `Dockerfile` for MySQL with the following configuration:
 
 ```dockerfile
 FROM mysql:8.0
 
-ENV MYSQL_ROOT_PASSWORD example
-ENV MYSQL_DATABASE db_example
-ENV MYSQL_USER example
-ENV MYSQL_PASSWORD example
+ENV MYSQL_ROOT_PASSWORD=example
+ENV MYSQL_DATABASE=db_example
+ENV MYSQL_USER=example
+ENV MYSQL_PASSWORD=example
 
 EXPOSE 3306
 ```
 
-**Importante**: Las variables de entorno configuradas en el archivo `.env` deben coincidir con las que se utilizan en el `Dockerfile` de MySQL para garantizar la consistencia en la conexión a la base de datos. Asegúrate de que las variables como `MYSQL_DATABASE`, `MYSQL_USER`, `MYSQL_PASSWORD` y `MYSQL_ROOT_PASSWORD` tengan los mismos valores en ambos archivos.
+**Important**: The environment variables configured in the `.env` file must match those used in the MySQL `Dockerfile` to ensure consistency in database connection. Ensure that variables like `MYSQL_DATABASE`, `MYSQL_USER`, `MYSQL_PASSWORD`, and `MYSQL_ROOT_PASSWORD` have the same values in both files.
 
 ---
-## Estructura del Proyecto
 
-La estructura del proyecto es la siguiente:
+## Project Structure
+
+The project structure is as follows:
 
 ```
 ImplementationPylintBlack/
 ├── FastAPI/
 │   ├── app/
-│   │   ├── config/                # Configuración de la base de datos y variables de entorno
+│   │   ├── config/                # Database configuration and environment variables
 │   │   │   └── database.py
-│   │   ├── routes/                # Definición de rutas de la API
-│   │   │   ├── article_route.py    # Rutas para gestionar artículos
-│   │   │   └── author_route.py     # Rutas para gestionar autores
-│   │   ├── schemas/               # Esquemas de datos para la API
-│   │   │   ├── article.py          # Esquema para el artículo
-│   │   │   └── author.py           # Esquema para el autor
-│   │   ├── services/              # Lógica de negocio y servicios de la API
-│   │   │   ├── article_service.py   # Servicios relacionados con artículos
-│   │   │   └── author_service.py    # Servicios relacionados con autores
-│   │   └── main.py                # Punto de entrada de la aplicación FastAPI
-├── Dockerfile                      # Dockerfile para el backend de FastAPI
-├── requirements.txt                # Dependencias de Python
-├── MySQL/                          # Configuración y volúmenes para MySQL
-│   └── Dockerfile                  # Dockerfile para la base de datos MySQL
-├── docker-compose.yml              # Configuración de Docker Compose
-├── Makefile                        # Script para facilitar la ejecución de contenedores
-├── .env_example                    # Ejemplo de archivo de variables de entorno
-└── .pylintrc                       # Configuración de Pylint
-└── README.md                       # Documentación del proyecto
+│   │   ├── routes/                # API route definitions
+│   │   │   ├── article_route.py    # Routes for managing articles
+│   │   │   └── author_route.py     # Routes for managing authors
+│   │   ├── schemas/               # Data schemas for the API
+│   │   │   ├── article.py          # Schema for the article
+│   │   │   └── author.py           # Schema for the author
+│   │   ├── services/              # Business logic and API services
+│   │   │   ├── article_service.py   # Services related to articles
+│   │   │   └── author_service.py    # Services related to authors
+│   │   └── main.py                # Entry point for the FastAPI application
+├── Dockerfile                      # Dockerfile for the FastAPI backend
+├── requirements.txt                # Python dependencies
+├── MySQL/                          # MySQL configuration and volumes
+│   └── Dockerfile                  # Dockerfile for the MySQL database
+├── docker-compose.yml              # Docker Compose configuration
+├── Makefile                        # Script to facilitate container execution
+├── .env_example                    # Example environment variable file
+└── .pylintrc                       # Pylint configuration
+└── README.md                       # Project documentation
 ```
 
-### Descripción de las Carpetas y Archivos
+### Description of Folders and Files
 
-- **app/**: Contiene todo el código de la aplicación FastAPI.
-  - **config/**: Archivos de configuración, incluyendo la conexión a la base de datos.
-  - **routes/**: Archivos que definen las rutas de la API.
-  - **schemas/**: Definiciones de los esquemas de datos utilizados en la API.
-  - **services/**: Contiene la lógica de negocio, servicios y funciones relacionadas con los artículos y autores.
-  - **main.py**: Punto de entrada para ejecutar la aplicación.
+- **app/**: Contains all the FastAPI application code.
+  - **config/**: Configuration files, including database connection.
+  - **routes/**: Files defining API routes.
+  - **schemas/**: Definitions of data schemas used in the API.
+  - **services/**: Contains business logic, services, and functions related to articles and authors.
+  - **main.py**: Entry point to run the application.
 
-- **Dockerfile**: Configuración para construir la imagen Docker del backend.
+- **Dockerfile**: Configuration to build the Docker image for the backend.
 
-- **requirements.txt**: Lista de dependencias necesarias para el proyecto.
+- **requirements.txt**: List of dependencies required for the project.
 
-- **MySQL/**: Contiene el Dockerfile específico para configurar el contenedor de MySQL.
+- **MySQL/**: Contains the Dockerfile for configuring the MySQL container.
 
-- **docker-compose.yml**: Archivo de configuración para Docker Compose, que orquesta la ejecución de los contenedores de la aplicación.
+- **docker-compose.yml**: Configuration file for Docker Compose, orchestrating the execution of application containers.
 
-- **Makefile**: Proporciona comandos simplificados para manejar la ejecución y el despliegue de los contenedores.
+- **Makefile**: Provides simplified commands to handle execution and deployment of containers.
 
-- **.env_example**: Archivo de ejemplo para las variables de entorno necesarias para la configuración.
+- **.env_example**: Example file for necessary environment variables for configuration.
 
-- **.pylintrc**: Archivo de configuración para Pylint, que permite personalizar las reglas de análisis de código.
+- **.pylintrc**: Configuration file for Pylint, allowing customization of code analysis rules.
 
-- **README.md**: Este archivo que documenta el proyecto.
+- **README.md**: This file documenting the project.
 
+## Contact
 
-## Contacto
-
-Si tienes alguna duda, no dudes en contactarnos en:
+If you have any questions, feel free to reach out to us at:
 - [portela.mariana.6654@eam.edu.co](mailto:portela.mariana.6654@eam.edu.co)
 - [valencia.alejandro.8426@eam.edu.co](mailto:valencia.alejandro.8426@eam.edu.co)
----
+
+--- 
