@@ -31,13 +31,22 @@ class ArticleService:
             raise ValueError(f"Failed to create article: {exc}") from exc
 
     @staticmethod
-    def update_article(article_id: int, **kwargs) -> ArticleModel:
+    def update_article(
+        article_id: int,
+        title: str,
+        content: str,
+        author_id: int,
+        published_date: datetime.datetime,
+    ) -> ArticleModel:
         """
         Updates an existing article in the database.
 
         Args:
             article_id (int): The ID of the article to update.
-            **kwargs: The fields to update for the article.
+            title (str): The new title of the article.
+            content (str): The new content of the article.
+            author_id (int): The new author of the article.
+            published_date (datetime.datetime): The new date the article was published.
 
         Returns:
             ArticleModel: The updated article instance.
@@ -46,11 +55,14 @@ class ArticleService:
             ValueError: If no article is found with the given ID or if an update fails.
         """
         try:
-
             article = ArticleModel.get(ArticleModel.article_id == article_id)
 
-            for key, value in kwargs.items():
-                setattr(article, key, value)
+            # Actualizar los campos del artículo
+            article.title = title
+            article.content = content
+            article.author_id_article = author_id
+            article.published_date = published_date
+            
             article.save()
             return article
 
@@ -60,7 +72,6 @@ class ArticleService:
             raise ValueError(f"Failed to update article due to integrity error: {exc}") from exc
         except Exception as e:
             raise ValueError(f"An unexpected error occurred: {e}") from e
-
 
     @staticmethod
     def delete_article(article_id: int) -> bool:

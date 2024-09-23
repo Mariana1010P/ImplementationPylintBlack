@@ -1,4 +1,5 @@
-from typing import List
+""" article_route.py """
+
 from fastapi import APIRouter, Body, HTTPException
 from peewee import DoesNotExist, IntegrityError
 from schemas.article import Article
@@ -35,7 +36,7 @@ def get_article_by_id(article_id: int):
         article = ArticleService.get_article_by_id(article_id)
         if not article:
             raise HTTPException(status_code=404, detail="Article not found")
-        return {"article": article}
+        return article
     except DoesNotExist:
         raise HTTPException(status_code=404, detail="Article not found")
     except Exception as exc:
@@ -67,27 +68,31 @@ def create_article(article: Article = Body(...)):
         raise HTTPException(status_code=400, detail=f"Integrity error: {str(exc)}") from exc
     except Exception as exc:
         raise HTTPException(status_code=500, detail=str(exc)) from exc
-        
-@article_route.put("/article/{article_id}", response_model=Article)
-def update_article(article_id: int, article_data: Article):
+
+@article_route.put("/articles/{article_id}", response_model=Article)
+def update_article(article_id: int, article_data: Article = Body(...)):
     """
     Updates an article.
-    ...
+
+    Args:
+        article_id (int): The ID of the article to update.
+        article_data (Article): The new data for the article.
+
+    Returns:
+        ArticleModel: The updated article.
     """
     try:
         article_update_data = article_data.dict(exclude_unset=True)
         article_update_data.pop('article_id', None)  # Elimina article_id del diccionario
 
         updated_article = ArticleService.update_article(article_id, **article_update_data)
-        return Article.from_orm(updated_article)
-    except ValueError:
-        raise HTTPException(status_code=404, detail="Article not found")
+        return {"message": "Article updated", "article": updated_article}
+    except ValueError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
     except IntegrityError as e:
-        raise HTTPException(status_code=400, detail="Error de integridad: " + str(e))
+        raise HTTPException(status_code=400, detail="Integrity error: " + str(e))
     except Exception as exc:
         raise HTTPException(status_code=500, detail=str(exc)) from exc
-
-
 
 @article_route.delete("/articles/{article_id}")
 def delete_article(article_id: int):
