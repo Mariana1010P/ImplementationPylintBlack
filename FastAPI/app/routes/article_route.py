@@ -60,11 +60,8 @@ def create_article(article: Article = Body(...)):
         article_data = ArticleService.create_article(
             title=article.title,
             author=article.author,
-            category=article.category,
             content=article.content,
             published_date=article.published_date,
-            status=article.status,
-            updated_date=article.updated_date,
         )
         return Article.from_orm(article_data)
     except IntegrityError as e:

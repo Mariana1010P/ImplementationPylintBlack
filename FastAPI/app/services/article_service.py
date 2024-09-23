@@ -12,7 +12,8 @@ class ArticleService:
     Service class for handling business logic related to articles.
 
     Methods:
-        create_article (title: str, author: int, content: str, published_date: datetime) -> ArticleModel
+        create_article (title: str, author: int, content: str,
+        published_date: datetime) -> ArticleModel
         update_article(article_id: int, **kwargs) -> ArticleModel
         delete_article(article_id: int) -> bool
         get_article_by_id(article_id: int) -> ArticleModel
